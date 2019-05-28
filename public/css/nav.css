@@ -1,0 +1,12 @@
+ button:focus {
+    outline: 0;
+}
+.navbar {
+    position:sticky;
+}
+.navbar .dropdown-menu .form-control {
+    width: 200px;
+}
+.active {
+    color:white;
+}

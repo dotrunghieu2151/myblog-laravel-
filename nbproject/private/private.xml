@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/D:/Program%20Files/XAMPP/htdocs/myblog/resources/views/post/show.blade.php</file>
+            <file>file:/D:/Program%20Files/XAMPP/htdocs/myblog/resources/views/dashboard.blade.php</file>
+            <file>file:/D:/Program%20Files/XAMPP/htdocs/myblog/app/Http/Kernel.php</file>
+            <file>file:/D:/Program%20Files/XAMPP/htdocs/myblog/resources/views/post/edit.blade.php</file>
+            <file>file:/D:/Program%20Files/XAMPP/htdocs/myblog/app/Http/Controllers/PostController.php</file>
+            <file>file:/D:/Program%20Files/XAMPP/htdocs/myblog/resources/views/post/create.blade.php</file>
+            <file>file:/D:/Program%20Files/XAMPP/htdocs/myblog/app/Http/Middleware/Authenticate.php</file>
+            <file>file:/D:/Program%20Files/XAMPP/htdocs/myblog/resources/views/inc/nav.blade.php</file>
+            <file>file:/D:/Program%20Files/XAMPP/htdocs/myblog/resources/views/post/index.blade.php</file>
+            <file>file:/D:/Program%20Files/XAMPP/htdocs/myblog/app/Http/Controllers/DashboardController.php</file>
+            <file>file:/D:/Program%20Files/XAMPP/htdocs/myblog/routes/web.php</file>
+        </group>
+    </open-files>
+</project-private>
