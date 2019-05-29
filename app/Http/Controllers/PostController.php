@@ -21,6 +21,7 @@ class PostController extends Controller
     public function index()
     {
         $posts = Post::orderBy('created_at','desc')->paginate(5);
+        $this->paginPage = $posts->currentPage();
         return view('post.index',['posts'=>$posts]);
     }
 
@@ -61,8 +62,15 @@ class PostController extends Controller
         } else {
             $fileNameToStore = "noimage.jpg";
         }
+        $title = Post::where("title","=",$request->input("title"))
+                                ->first();
+        if ($title !== null) {
+            return redirect("/posts/create")->withError("This title has been used")
+                                            ->withInput();
+        }
         $post = new Post;
-        $post->title = $request->input('title');
+        $post->title = $request->input("title");
+        $post->url_title = str_slug($request->input("title"),'-');
         $post->body = $request->input('body');
         $post->userId = auth()->user()->id;
         $post->cover_image = $fileNameToStore;
@@ -76,9 +84,12 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($url_title)
     {
-        $post = Post::find($id);
+        $post = Post::where("url_title","=",$url_title)->first();
+        if ($post === null) {
+            return redirect('/posts')->withError("We cannot find this post");
+        }
         return view('post.show',["post"=>$post]);
     }
 
@@ -88,12 +99,15 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($url_title)
     {
-        $post = Post::find($id);
+        $post = Post::where("url_title","=",$url_title)->first();
+        if ($post === null) {
+            return redirect('/posts')->withError("We cannot find this post");
+        }
         // check for correct user and post
         if (auth()->user()->id !== $post->user->id) {
-            return redirect('/posts')->with('error',"Unauthorized post");
+            return redirect('/posts')->withError("Unauthorized post");
         }
         return view("post.edit",["post"=>$post]);
     }
@@ -112,6 +126,8 @@ class PostController extends Controller
             "body" => 'required',
             "cover_image" =>'image|nullable|max:1999'
         ]);
+        $post = Post::find($id);
+        // handle image
          if ($request->hasFile('cover_image')) {
             $fileNameWithEXT = $request->file("cover_image")->getClientOriginalName();
             // get just the filename
@@ -120,18 +136,22 @@ class PostController extends Controller
             $extension = $request->file('cover_image')->getClientOriginalExtension();
             // filename to store
             $fileNameToStore = $fileName.'_'.time().".".$extension;
-            // upload
+            // upload to storage
             $path = $request->file("cover_image")->storeAs('public/cover_images', $fileNameToStore);
+            // asign to database
+            $post->cover_image = $fileNameToStore;          
+         } else {
+            $post->cover_image = "noimage.jpg";
+         }
+        if ($request->input('title') !== $post->title &&
+            Post::where("title","=",$request->input('title'))->first() !== null) {
+            return redirect("/posts/$post->url_title/edit")->withError("This title has been taken");
         }
-        $post = Post::find($id);
         $post->title = $request->input('title');
+        $post->url_title = str_slug($request->input('title'),'-');
         $post->body = $request->input('body');
-        if ($request->hasFile('cover_image')) {
-            $post->cover_image = $fileNameToStore;
-        }
-        $post->cover_image = $fileNameToStore;
         $post->save();
-        return redirect('/posts')->with('success','Post updated');
+        return redirect("/posts")->with('success','Post updated');
     }
 
     /**

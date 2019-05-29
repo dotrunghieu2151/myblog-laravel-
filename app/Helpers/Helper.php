@@ -9,10 +9,4 @@ class Helper
     {
         return Request::is("$path/*") || Request::is("$path") ? $active : '';
     }
-    public static function dnd($data) 
-    {
-        echo "<br>";
-        var_dump($data);
-        die();
-    }
 }

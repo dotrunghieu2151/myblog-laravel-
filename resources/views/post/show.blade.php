@@ -1,7 +1,6 @@
 @extends('layout.main')
 @section('title',"Blog show")
-@section('content')
-    <a href='/posts' class='btn btn-primary'>Go back</a>
+@section('content')   
     <div class="well">
         <h3>{{$post->title}}</h3>
         <img style="width:100%;" src="/storage/cover_images/{{$post->cover_image}}">
@@ -12,7 +11,7 @@
     </div>
     @auth
         @if (Auth::user()->id === $post->user->id )
-            <a href="/posts/{{$post->id}}/edit" class="btn btn-success">Edit</a>
+            <a href="/posts/{{$post->url_title}}/edit" class="btn btn-success">Edit</a>
             <form action="/posts/{{$post->id}}" method="POST">
                 {{csrf_field()}}
                 <input type="hidden" name="_method" value="DELETE">

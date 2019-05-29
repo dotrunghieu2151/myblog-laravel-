@@ -5,14 +5,15 @@
         <group>
             <file>file:/D:/Program%20Files/XAMPP/htdocs/myblog/resources/views/post/show.blade.php</file>
             <file>file:/D:/Program%20Files/XAMPP/htdocs/myblog/resources/views/dashboard.blade.php</file>
-            <file>file:/D:/Program%20Files/XAMPP/htdocs/myblog/app/Http/Kernel.php</file>
             <file>file:/D:/Program%20Files/XAMPP/htdocs/myblog/resources/views/post/edit.blade.php</file>
             <file>file:/D:/Program%20Files/XAMPP/htdocs/myblog/app/Http/Controllers/PostController.php</file>
             <file>file:/D:/Program%20Files/XAMPP/htdocs/myblog/resources/views/post/create.blade.php</file>
             <file>file:/D:/Program%20Files/XAMPP/htdocs/myblog/app/Http/Middleware/Authenticate.php</file>
             <file>file:/D:/Program%20Files/XAMPP/htdocs/myblog/resources/views/inc/nav.blade.php</file>
             <file>file:/D:/Program%20Files/XAMPP/htdocs/myblog/resources/views/post/index.blade.php</file>
+            <file>file:/D:/Program%20Files/XAMPP/htdocs/myblog/resources/views/auth/login.blade.php</file>
             <file>file:/D:/Program%20Files/XAMPP/htdocs/myblog/app/Http/Controllers/DashboardController.php</file>
+            <file>file:/D:/Program%20Files/XAMPP/htdocs/myblog/resources/views/auth/register.blade.php</file>
             <file>file:/D:/Program%20Files/XAMPP/htdocs/myblog/routes/web.php</file>
         </group>
     </open-files>
