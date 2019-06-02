@@ -25,7 +25,7 @@
                         @foreach ($posts as $post)
                             <tr>
                                 <td>{{$post->title}}</td>
-                                <td><a href="/posts/{{$post->id}}/edit">Edit</a></td>
+                                <td><a href="/posts/{{$post->url_title}}/edit">Edit</a></td>
                                 <td>
                                      <form action="/posts/{{$post->id}}" method="POST">
                                         {{csrf_field()}}

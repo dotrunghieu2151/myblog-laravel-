@@ -7,14 +7,15 @@
         <br><br>
         <small>Written at {{$post->created_at->format('d-m-Y')}} - {{$post->created_at->diffForHumans()}}</small>
         <small>Written by {{$post->user->name}}</small>
+        <p><strong>{{$post->genderOptions()[$post->gender]}}</strong></p>
         <h4>{{$post->body}}</h4>        
     </div>
     @auth
         @if (Auth::user()->id === $post->user->id )
             <a href="/posts/{{$post->url_title}}/edit" class="btn btn-success">Edit</a>
             <form action="/posts/{{$post->id}}" method="POST">
-                {{csrf_field()}}
-                <input type="hidden" name="_method" value="DELETE">
+                @csrf
+                @method('DELETE')
                 <input type="submit" value="delete" name="submit" class="btn btn-danger">
             </form>
         @endif

@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use \App\Http\Requests\PostsRequest;
 use App\Post;
+use App\Helpers\Helper;
 
 class PostController extends Controller
 {
@@ -22,7 +24,7 @@ class PostController extends Controller
     {
         $posts = Post::orderBy('created_at','desc')->paginate(5);
         $this->paginPage = $posts->currentPage();
-        return view('post.index',['posts'=>$posts]);
+        return view('post.index',compact('posts'));
     }
 
     /**
@@ -32,7 +34,8 @@ class PostController extends Controller
      */
     public function create()
     {
-        return view('post.create');
+        $post = new Post;
+        return view('post.create',compact('post'));
     }
 
     /**
@@ -41,40 +44,23 @@ class PostController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
-        $this->validate($request, [
-            "title" => 'required',
-            "body" => 'required',
-            "cover_image" =>'image|nullable|max:1999'
-        ]);
+    public function store(PostsRequest $request)
+    {    
         // handle file upload
         if ($request->hasFile('cover_image')) {
-            $fileNameWithEXT = $request->file("cover_image")->getClientOriginalName();
-            // get just the filename
-            $fileName = pathinfo($fileNameWithEXT, PATHINFO_FILENAME);
-            // get just extension
-            $extension = $request->file('cover_image')->getClientOriginalExtension();
-            // filename to store
-            $fileNameToStore = $fileName.'_'.time().".".$extension;
-            // upload
-            $path = $request->file("cover_image")->storeAs('public/cover_images', $fileNameToStore);
+            $fileNameToStore = Helper::handleImage($request);
         } else {
             $fileNameToStore = "noimage.jpg";
         }
-        $title = Post::where("title","=",$request->input("title"))
-                                ->first();
-        if ($title !== null) {
-            return redirect("/posts/create")->withError("This title has been used")
-                                            ->withInput();
-        }
-        $post = new Post;
-        $post->title = $request->input("title");
-        $post->url_title = str_slug($request->input("title"),'-');
-        $post->body = $request->input('body');
-        $post->userId = auth()->user()->id;
-        $post->cover_image = $fileNameToStore;
-        $post->save();
+        $url_title =  Post::createSlug($request->title);
+        Post::create([
+            'title' => $request->title,
+            'url_title' => $url_title,
+            'body' => $request->body,
+            'userId' => auth()->user()->id,
+            'cover_image' => $fileNameToStore,
+            'gender' => $request->gender
+        ]);
         return redirect('/posts')->with('success','Post created');
     }
 
@@ -89,8 +75,14 @@ class PostController extends Controller
         $post = Post::where("url_title","=",$url_title)->first();
         if ($post === null) {
             return redirect('/posts')->withError("We cannot find this post");
-        }
-        return view('post.show',["post"=>$post]);
+        } elseif ($post->gender !== "2" && auth()->user() === null) {
+            return redirect()->back()->withError("This post is gender specify. You need to login");
+        } elseif ($post->gender !== "2" && 
+                  auth()->user()->gender !== $post->gender &&
+                  auth()->user()->id !== $post->userId) {
+            return redirect()->back()->withError("This is {$post->genderOptions()[$post->gender]} only.");
+        } 
+        return view('post.show',compact('post'));   
     }
 
     /**
@@ -109,7 +101,7 @@ class PostController extends Controller
         if (auth()->user()->id !== $post->user->id) {
             return redirect('/posts')->withError("Unauthorized post");
         }
-        return view("post.edit",["post"=>$post]);
+        return view("post.edit",compact('post'));
     }
 
     /**
@@ -119,37 +111,21 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(PostsRequest $request, $id)
     {
-          $this->validate($request, [
-            "title" => 'required',
-            "body" => 'required',
-            "cover_image" =>'image|nullable|max:1999'
-        ]);
         $post = Post::find($id);
-        // handle image
-         if ($request->hasFile('cover_image')) {
-            $fileNameWithEXT = $request->file("cover_image")->getClientOriginalName();
-            // get just the filename
-            $fileName = pathinfo($fileNameWithEXT, PATHINFO_FILENAME);
-            // get just extension
-            $extension = $request->file('cover_image')->getClientOriginalExtension();
-            // filename to store
-            $fileNameToStore = $fileName.'_'.time().".".$extension;
-            // upload to storage
-            $path = $request->file("cover_image")->storeAs('public/cover_images', $fileNameToStore);
-            // asign to database
-            $post->cover_image = $fileNameToStore;          
-         } else {
-            $post->cover_image = "noimage.jpg";
-         }
-        if ($request->input('title') !== $post->title &&
-            Post::where("title","=",$request->input('title'))->first() !== null) {
-            return redirect("/posts/$post->url_title/edit")->withError("This title has been taken");
+        if (auth()->user()->id !== $post->user->id) {
+            return redirect('/posts')->withError("Unauthorized post");
         }
+        // handle image
+        if ($request->hasFile('cover_image')) {
+             $post->cover_image = Helper::handleImage($request);     
+        }
+        $url_title = Post::createSlug($request->title, $id);
         $post->title = $request->input('title');
-        $post->url_title = str_slug($request->input('title'),'-');
+        $post->url_title = $url_title;
         $post->body = $request->input('body');
+        $post->gender = $request->gender;
         $post->save();
         return redirect("/posts")->with('success','Post updated');
     }

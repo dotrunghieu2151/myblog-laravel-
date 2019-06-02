@@ -13,6 +13,7 @@
                         <h3><a href="/posts/{{$post->url_title}}">{{$post->title}}</a></h3>
                         <small>Written at {{$post->created_at->format('d-m-Y')}} - {{$post->created_at->diffForHumans()}}</small>
                         <small>Written by {{$post->user->name}}</small>
+                        <p><strong>{{$post->genderOptions()[$post->gender]}}</strong></p>
                     </div>
                 </div>                
             </div>
