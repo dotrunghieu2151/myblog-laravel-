@@ -15,6 +15,7 @@ Route::get('/about','AboutController@index');
 Route::get('/service','ServiceController@index');
 
 Route::resource('posts','PostController');
+Route::get('/dashboard/export','PostController@export')->name('excel.download');
 
 Auth::routes();
 Route::get('/dashboard', 'DashboardController@index');

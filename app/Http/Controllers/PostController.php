@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use \App\Http\Requests\PostsRequest;
 use App\Post;
+use \App\Exports\PostsExport;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Helpers\Helper;
 
 class PostController extends Controller
@@ -22,8 +24,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::orderBy('created_at','desc')->paginate(5);
-        $this->paginPage = $posts->currentPage();
+        $posts = Post::with('user')->orderBy('created_at','desc')->paginate(5);
         return view('post.index',compact('posts'));
     }
 
@@ -147,5 +148,13 @@ class PostController extends Controller
         }
         $post->delete();
         return redirect("/posts")->with("success","Post removed");
+    }
+    public function export()
+    {
+        if (auth()->user() === null)
+        {
+            return redirect('/posts')->withError("you need to login to use the feature");
+        }
+        return Excel::download(new PostsExport, "posts-".auth()->user()->name.".xlsx");     
     }
 }

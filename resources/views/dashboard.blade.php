@@ -16,6 +16,7 @@
                     <li><a href="/posts/create" class="btn btn-primary">Create post</a></li>
                     <h3>Your posted blogs</h3>
                     @if (count($posts) > 0 )
+                    <a class="btn btn-success" href="{{route('excel.download')}}">Export to excel</a>
                     <table class='table table-striped'>
                         <tr>
                             <th>Title</th>
